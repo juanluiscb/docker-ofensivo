@@ -1,0 +1,3 @@
+alias vpnhtb="openvpn /ofensivo/vpn/hackthebox.ovpn"
+alias apacheup="service apache2 start"
+alias apachedown="service apache2 stop"
