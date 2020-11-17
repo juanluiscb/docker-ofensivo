@@ -79,14 +79,20 @@ RUN \
 	go get github.com/OJ/gobuster && \
 	go get github.com/ffuf/ffuf 
 
+
+# Personalizar 
+
 COPY shell/ /tmp
 
-# Personalizar
 
 RUN \
-	# Banner
+  # Banner
 	cat /tmp/banner >> /root/.zshrc && \
-	# Crear accesos rapidos
-	cat /tmp/alias >> /root/.zshrc 
+  # Crear accesos rapidos personalizados 
+	cat /tmp/alias >> /root/.zshrc && \
+  # Crear funciones personalizadas
+	cat /tmp/funciones >> /root/.zshrc 
+  # Actualizar la base de datos de archvios locales
+	updatedb
 
 WORKDIR /

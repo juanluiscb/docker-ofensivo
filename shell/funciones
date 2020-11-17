@@ -1,0 +1,4 @@
+
+aw(){
+	aws s3 ls s3://$1 --no-sign-request
+}
