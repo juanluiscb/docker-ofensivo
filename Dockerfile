@@ -9,8 +9,8 @@ RUN apt-get update && DEBIAN_FRONTEND="noninteractive" apt-get -y install tzdata
 RUN \
 
 # Sistema
-    	apt-get update && \
-    	apt-get install -y \
+    apt-get update && \
+    apt-get install -y \
 	apache2 \
 	chromium-browser \
 	curl \
@@ -19,8 +19,11 @@ RUN \
 	htop \
 	jq \
 	locate \
+	nano \
 	p7zip-full \
+	squid \
 	ssh \
+	tmux \
 	traceroute \
 	unzip \
 	vim \
@@ -58,10 +61,41 @@ RUN \
 	nikto \
 	smbclient \
 	fcrackzip 
+	#apt-get update
+
+# Instalar python-pip
+RUN curl -O https://raw.githubusercontent.com/pypa/get-pip/master/get-pip.py &&  \
+    python get-pip.py  && \
+    echo "PATH=$HOME/.local/bin/:$PATH" >> ~/.bashrc && \
+    rm get-pip.py
+
+
 
 # >> Servicios
 
 FROM baseline as builder
+
+RUN \
+
+# Configuracion de Apache
+	sed -i 's/Si Funciona!/Funciona desde el contenedor!/g' /var/www/html/index.html && \	
+
+# Configuracion de Squid
+	echo "http_access allow all" >> /etc/squid/squid.conf && \
+    	sed -i 's/http_access deny all/#http_access deny all/g' /etc/squid/squid.conf && \
+
+# Instalar oh-my-sh
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended && \
+    sed -i '1i export LC_CTYPE="C.UTF-8"' /root/.zshrc && \
+    sed -i '2i export LC_ALL="C.UTF-8"' /root/.zshrc && \
+    sed -i '3i export LANG="C.UTF-8"' /root/.zshrc && \
+    sed -i '3i export LANGUAGE="C.UTF-8"' /root/.zshrc && \
+    git clone --depth 1 https://github.com/zsh-users/zsh-autosuggestions /root/.oh-my-zsh/custom/plugins/zsh-autosuggestions && \
+    git clone --depth 1 https://github.com/zsh-users/zsh-syntax-highlighting.git /root/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting && \
+    git clone --depth 1 https://github.com/zsh-users/zsh-history-substring-search /root/.oh-my-zsh/custom/plugins/zsh-history-substring-search && \
+    sed -i 's/plugins=(git)/plugins=(git aws golang nmap node pip pipenv python ubuntu zsh-autosuggestions zsh-syntax-highlighting zsh-history-substring-search)/g' /root/.zshrc && \
+    sed -i '78i autoload -U compinit && compinit' /root/.zshrc
+
 
 # Instalar Go
 RUN \
@@ -71,7 +105,6 @@ RUN \
 ENV GOROOT "/usr/local/go"
 ENV GOPATH "/root/go"
 ENV PATH "$PATH:$GOPATH/bin:$GOROOT/bin"
-
 
 
 # >> Recon
@@ -91,7 +124,9 @@ RUN \
   # Crear accesos rapidos personalizados 
 	cat /tmp/alias >> /root/.zshrc && \
   # Crear funciones personalizadas
-	cat /tmp/funciones >> /root/.zshrc 
+	cat /tmp/funciones >> /root/.zshrc && \
+  # Configuracion tmux
+	cp /tmp/.tmux.conf /root && \
   # Actualizar la base de datos de archvios locales
 	updatedb
 

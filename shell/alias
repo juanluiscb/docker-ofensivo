@@ -1,4 +1,6 @@
 alias vpnhtb="openvpn /ofensivo/vpn/hackthebox.ovpn"
 alias vpntry="openvpn /ofensivo/vpn/tryhackme.ovpn"
-alias apacheup="service apache2 start"
-alias apachedown="service apache2 stop"
+alias apacheUp="service apache2 start"
+alias apacheDown="service apache2 stop"
+alias squidUP="service squid start"
+alias squidDown="service squid stop"
