@@ -32,3 +32,4 @@ Notas:
 - Automatizar la creación del VPS en la nube con terraform
 - Aprovisionar el servidor con ansible
 - Desplegar el contenerdor en el VPS en la nube
+- Se aceptan sugerencias
