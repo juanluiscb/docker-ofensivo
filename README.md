@@ -3,8 +3,9 @@
 Es una imagen de docker con las herramientas más usadas para pruebas de penetración o pentest, para ser desplegada fácil y rápidamente.
 
 ## Tabla de Contenido
-. [Requerimientos](#requerimientos)
-. [Como Usar](#como%20usar)
+- [Requerimientos](#requerimientos)
+- [Como usar](#Como%20usar)
+- [Cosas por haceer](#Cosas%20por%20hacer)
 
 ## Requerimientos
 - Tener instalado el servicio de docker
