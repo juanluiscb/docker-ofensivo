@@ -15,6 +15,7 @@ RUN \
 	chromium-browser \
 	curl \
 	figlet \
+	fping \
 	ftp \
 	htop \
 	jq \
@@ -32,9 +33,12 @@ RUN \
 	zsh \
 
 # Red
+	arp-scan \
 	dnsutils \
 	host \
 	iputils-ping \
+	nbtscan \
+	netdiscover \
 	net-tools \
 	openvpn \
 	tcpdump \
@@ -174,6 +178,34 @@ FROM baseline as wordlists
 ## >> Configutar las Wordlists
 FROM builder2 as builder3
 COPY --from=wordlists /temp/ /tools/wordlists/
+
+
+## >> Instalar exploits
+FROM baseline as exploits
+
+	RUN mkdir /temp
+	WORKDIR /temp/
+
+	# aqui van exploits especificos
+
+
+## >> Configurar exploits integrados
+FROM builder3 as builder4
+
+	COPY --from=exploits /temp/ /tools/exploits
+	WORKDIR /tools/exploits
+
+	
+	RUN \
+		# Instalar searchsploit
+		git clone --depth 1 https://github.com/offensive-security/exploitdb.git /opt/exploitdb && \
+		sed 's|path_array+=(.*)|path_array+=("/opt/exploitdb")|g' /opt/exploitdb/.searchsploit_rc > ~/.searchsploit_rc && \
+		ln -sf /opt/exploitdb/searchsploit /usr/local/bin/searchsploit && \
+		# Install metasploit
+		curl https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb > msfinstall && \
+		chmod 755 msfinstall && \
+		./msfinstall && \
+		msfupdate
 
 
 # Personalizar S.O.
