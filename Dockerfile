@@ -25,6 +25,7 @@ RUN \
 	ssh \
 	tmux \
 	traceroute \
+	tree \
 	unzip \
 	vim \
 	wget \
@@ -47,21 +48,27 @@ RUN \
 	openjdk-8-jdk \
 	php \
 	python \
+	python-dnspython \
 	python-dev \
 	python3 \
 	python3-pip \
+	subversion \
 	ruby-full \
 	
 # Ofensivas 
 	cewl \
 	hashcat \
 	hydra \
+	ldap-utils \
 	nmap \
 	netcat \ 
 	nikto \
 	smbclient \
-	fcrackzip 
-	#apt-get update
+	fcrackzip && \
+
+	gem install wpscan && \
+	
+	apt-get update
 
 # Instalar python-pip
 RUN curl -O https://raw.githubusercontent.com/pypa/get-pip/master/get-pip.py &&  \
@@ -96,6 +103,15 @@ RUN \
     sed -i 's/plugins=(git)/plugins=(git aws golang nmap node pip pipenv python ubuntu zsh-autosuggestions zsh-syntax-highlighting zsh-history-substring-search)/g' /root/.zshrc && \
     sed -i '78i autoload -U compinit && compinit' /root/.zshrc
 
+# Instalar dependencias de python
+COPY pip3_requirements.txt /tmp
+COPY pip_requirements.txt /tmp
+RUN \
+	pip3 install -r /tmp/pip3_requirements.txt && \
+	pip install -r /tmp/pip_requirements.txt
+
+# Herraminetas de Desarrrollador
+WORKDIR /tmp
 
 # Instalar Go
 RUN \
@@ -107,13 +123,60 @@ ENV GOPATH "/root/go"
 ENV PATH "$PATH:$GOPATH/bin:$GOROOT/bin"
 
 
-# >> Recon
+## >> Herramientas de reconocimiento
+FROM baseline as recon
+
+RUN mkdir /temp
+WORKDIR /temp/
+
 RUN \
-	go get github.com/OJ/gobuster && \
-	go get github.com/ffuf/ffuf 
+	# Instalar: aquatone
+    wget --quiet https://github.com/michenriksen/aquatone/releases/download/v1.7.0/aquatone_linux_amd64_1.7.0.zip -O aquatone.zip && \
+    unzip aquatone.zip -d aquatone  && \
+    rm aquatone.zip  && \
+	# Descargar: knock
+    git clone --depth 1 https://github.com/guelfoweb/knock.git && \
+	# Instalar: whatweb
+	git clone --depth 1 https://github.com/urbanadventurer/WhatWeb.git 
 
 
-# Personalizar 
+
+## >> Configurar herramientas de recon
+FROM builder as builder2 
+
+	COPY --from=recon /temp/ /tools/recon/
+	WORKDIR /tools/recon
+	RUN \
+		ln -s /tools/recon/aquatone/aquatone /usr/bin/aquatone && \
+		go get github.com/OJ/gobuster && \
+		go get github.com/lc/otxurls && \
+		go get github.com/tomnomnom/waybackurls && \
+		ln -s /tools/recon/WhatWeb/whatweb /usr/bin/whatweb
+
+	# Instalar: Knock
+	WORKDIR /tools/recon/knock
+	RUN python setup.py install
+
+## >> Descargar los Wordlists
+FROM baseline as wordlists
+
+	RUN mkdir /temp
+	WORKDIR /temp/
+
+	RUN \
+		git clone --depth 1 https://github.com/danielmiessler/SecLists.git && \
+		curl -L -o rockyou.txt https://github.com/brannondorsey/naive-hashcat/releases/download/data/rockyou.txt && \
+		curl -L -o all.txt https://gist.githubusercontent.com/jhaddix/86a06c5dc309d08580a018c66354a056/raw/96f4e51d96b2203f19f6381c8c545b278eaa0837/all.txt && \
+		svn checkout https://github.com/daviddias/node-dirbuster/trunk/lists/ dirbuster && \
+		svn checkout https://github.com/v0re/dirb/trunk/wordlists dirb
+
+
+## >> Configutar las Wordlists
+FROM builder2 as builder3
+COPY --from=wordlists /temp/ /tools/wordlists/
+
+
+# Personalizar S.O.
 
 COPY shell/ /tmp
 
