@@ -26,10 +26,29 @@ docker run --rm -it --name ofensivo docker-ofensivo /bin/zsh
 ~~~~
 docker run --rm -it --name ofensivovpn --cap-add=NET_ADMIN --device=/dev/net/tun --sysctl net.ipv6.conf.all.disable_ipv6=0  -v /Users/castr/hack/ofensivo:/ofensivo docker-ofensivo /bin/zsh
 ~~~~
-- Conectarse al contenedor
+- Una vez dentro del contenedor, conectarse a la vpn deseada, usando los alias en shell/alias
 ~~~
-docker exec -i -t ofensivovpn /bin/zsh
+vpnhtb  
+vpntry
 ~~~
+Nota:
+- Tener en cuenta que los archivos de conexión de la vpn se comparten con el contenedor de la máquina local (/User/castr/hack/ofensiv/vpn)
+
+### Ejecutar el contenrdor con sporte vpn y proxy squid y apache (puertos 3128 y 80)
+
+Si deseas poder acceder a los puertos http/https/ftp de las máquinas dentro de la vpn lo puedes hacer através del proxy squid, también tendrás un servidor web local corriendo dentro del contenedor.
+
+- Levantar el contenedr
+~~~
+docker run --rm -it --name ofensivovpn --cap-add=NET_ADMIN --device=/dev/net/tun --sysctl net.ipv6.conf.all.disable_ipv6=0  -v /Users/castr/hack/ofensivo:/ofensivo -p 3128:3128 -p 80:80 docker-ofensivo /bin/zsh
+~~~
+
+- Una vez dentro del contenedor, arrancar squid y/o apache de acuerdo a las necesidades, usando los alias en shell/alias
+~~~
+squidUP
+apacheUP
+~~~
+
 
 
 Notas: 
