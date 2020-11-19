@@ -32,7 +32,7 @@ vpnhtb
 vpntry
 ~~~
 Nota:
-- Tener en cuenta que los archivos de conexión de la vpn se comparten con el contenedor de la máquina local (/User/castr/hack/ofensiv/vpn)
+- Tener en cuenta que los archivos de conexión de la vpn se comparten con el contenedor de la máquina local (/User/castr/hack/ofensivo)
 
 ### Ejecutar el contenrdor con sporte vpn y proxy squid y apache (puertos 3128 y 80)
 
