@@ -47,12 +47,7 @@ docker run --rm -it --name ofensivovpn --cap-add=NET_ADMIN --device=/dev/net/tun
 ~~~
 squidUP
 apacheUP
-~~~
-
-
-
-Notas: 
-- Los archivos de conexión a vpn (.ovpn) se guardan de manera local y se ponene disponibles usando un volumén
+~~~ 
 
 
 ## Cosas por hacer
