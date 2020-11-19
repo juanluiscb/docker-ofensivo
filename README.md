@@ -4,8 +4,8 @@ Es una imagen de docker con las herramientas más usadas para pruebas de penetra
 
 ## Tabla de Contenido
 - [Requerimientos](#requerimientos)
-- [Como usar](#Como-usar)
-- [Cosas por haceer](#Cosas-por-hacer)
+- [Como usar](#como-usar)
+- [Cosas por haceer](#cosas-por-hacer)
 
 ## Requerimientos
 - Tener instalado el servicio de docker
