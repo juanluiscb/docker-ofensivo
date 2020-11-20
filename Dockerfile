@@ -56,17 +56,18 @@ RUN \
 	python-dev \
 	python3 \
 	python3-pip \
-	subversion \
 	ruby-full \
 	
 # Ofensivas 
 	cewl \
+	crunch \
 	hashcat \
 	hydra \
 	ldap-utils \
 	nmap \
 	netcat \ 
 	nikto \
+	python3-impacket \
 	smbclient \
 	fcrackzip && \
 
@@ -168,11 +169,13 @@ FROM baseline as wordlists
 	WORKDIR /temp/
 
 	RUN \
+		#svn checkout https://github.com/daviddias/node-dirbuster/trunk/lists/ dirbuster && \
+		#svn checkout https://github.com/v0re/dirb/trunk/wordlists dirb && \
+		git clone --depth 1 https://github.com/v0re/dirb.git && \
+		git clone --depth 1 https://github.com/daviddias/node-dirbuster.git && \
 		git clone --depth 1 https://github.com/danielmiessler/SecLists.git && \
 		curl -L -o rockyou.txt https://github.com/brannondorsey/naive-hashcat/releases/download/data/rockyou.txt && \
-		curl -L -o all.txt https://gist.githubusercontent.com/jhaddix/86a06c5dc309d08580a018c66354a056/raw/96f4e51d96b2203f19f6381c8c545b278eaa0837/all.txt && \
-		svn checkout https://github.com/daviddias/node-dirbuster/trunk/lists/ dirbuster && \
-		svn checkout https://github.com/v0re/dirb/trunk/wordlists dirb
+		curl -L -o all.txt https://gist.githubusercontent.com/jhaddix/86a06c5dc309d08580a018c66354a056/raw/96f4e51d96b2203f19f6381c8c545b278eaa0837/all.txt  
 
 
 ## >> Configutar las Wordlists
@@ -206,6 +209,24 @@ FROM builder3 as builder4
 		chmod 755 msfinstall && \
 		./msfinstall && \
 		msfupdate
+
+# >> Sharing
+FROM baseline as sharing
+
+	RUN mkdir /temp
+	WORKDIR /temp
+
+	RUN \
+		git clone --depth 1 https://github.com/SecureAuthCorp/impacket.git
+
+
+FROM builder4 as builder5
+
+	COPY --from=sharing /temp/ /tools/share
+	WORKDIR /tools/share
+
+	RUN \
+		pip install impacket/
 
 
 # Personalizar S.O.

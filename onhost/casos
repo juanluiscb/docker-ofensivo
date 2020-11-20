@@ -1,0 +1,7 @@
+
+
+alias doImgrm="docker rmi docker-ofensivo"
+alias doBuild="docker build -t docker-ofensivo ."
+alias doUp="docker run --rm -it --name ofensivo docker-ofensivo /bin/zsh"
+alias dovpn="docker run --rm -it --name ofensivovpn --cap-add=NET_ADMIN --device=/dev/net/tun --sysctl net.ipv6.conf.all.disable_ipv6=0  -v /Users/castr/hack/ofensivo:/ofensivo -p 3128:3128 -p 80:80 -p 445:445 docker-ofensivo /bin/zsh"
+

@@ -1,4 +1,11 @@
 
+
+
+
+
+
+# Bugbounty
+
 aw(){
 	aws s3 ls s3://$1 --no-sign-request
 }
@@ -7,3 +14,17 @@ urls() {
 	otxurls $1 | tee -a urls.txt
 	waybackurls $1 | tee -a urls.txt
 }
+
+
+# Pentest
+
+smbserverhere() {
+    local sharename
+    [[ -z $1 ]] && sharename="share" || sharename=$1
+    /tools/share/impacket/examples/smbserver.py -smb2support $sharename . -username tmp -password tmp
+}
+
+webserverhere () {
+	python3 -m http.server 80
+}
+
